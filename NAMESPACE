@@ -1,0 +1,3 @@
+useDynLib(rCTCBN, .registration = TRUE, .fixes = "C_")
+
+exportPattern("^[[:alpha:]]+")
