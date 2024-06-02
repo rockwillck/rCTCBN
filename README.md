@@ -14,5 +14,5 @@ Run `?ctcbn` to learn how to use the function.
 - [ ] Windows
 ## Roadmap
 - [x] Base method
-- [ ] Parameters
-- [ ] Documentation
+- [x] Parameters
+- [x] Documentation
