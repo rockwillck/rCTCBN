@@ -59,7 +59,7 @@ char* read_file(const char *filename) {
     return buffer;
 }
 
-SEXP ctcbn(SEXP fs, SEXP mb, SEXP bs, SEXP rs, SEXP sr, SEXP epsilon, SEXP nd, SEXP emr, SEXP xxx, SEXP ppp)
+SEXP ctcbn(SEXP fs, SEXP mb, SEXP bs, SEXP rs, SEXP sr, SEXP epsilon, SEXP nd, SEXP emr)
 {
   const char *filestem = CHAR(STRING_ELT(fs, 0));
 
@@ -78,13 +78,6 @@ SEXP ctcbn(SEXP fs, SEXP mb, SEXP bs, SEXP rs, SEXP sr, SEXP epsilon, SEXP nd, S
   int B = INTEGER(bs)[0];  // bootstrap samples
   int BM = INTEGER(mb)[0]; // bootstrap mode
   int c = 0;
-
-  if (LOGICAL(xxx)[0]) {
-    write_expected_times = 1;
-  }
-  if (LOGICAL(xxx)[1]) {
-    GPS = 1;
-  }
 
   // no epsilon provided from R
   if (eps >= 1.0) {
