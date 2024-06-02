@@ -28,7 +28,9 @@ ctcbn <- function(filestem,
   values = strsplit(rows[3], "\t")
 
   df <- data.frame(row.names = unlist(names))
-  df$values = unlist(values)
+  df$values = as.numeric(unlist(values))
 
-  return(as.data.frame(t(df)))
+  outputdf = as.data.frame(t(df))
+  rownames(outputdf) = NULL
+  return(outputdf)
 }
