@@ -1,8 +1,3 @@
-# Hello, world!
-#
-# This is an example function named 'hello'
-# which prints 'Hello, world!'.
-#
 # You can learn more about package authoring with RStudio at:
 #
 #   https://r-pkgs.org
@@ -17,7 +12,17 @@
   library.dynam("rCTCBN", package, lib )
 }
 
-ctcbn <- function(path, bootstrap_mode, bootstrap_samples, random_seed, sampling_rate, epsilon=2, num_drawn_samples, num_em_runs, x, p)
+ctcbn <- function(path,
+                  bootstrap_mode = 0,
+                  bootstrap_samples = 0,
+                  random_seed = 0,
+                  sampling_rate = 1.0,
+                  epsilon = 2,
+                  num_drawn_samples = 0,
+                  num_em_runs = 1,
+                  x = 0,
+                  p = 0
+)
 {
   x = .Call("ctcbn", suppressWarnings(normalizePath(path)), as.integer(bootstrap_mode), as.integer(bootstrap_samples), as.integer(random_seed), as.double(sampling_rate), as.double(epsilon), as.integer(num_drawn_samples), as.integer(num_em_runs), as.logical(x), as.logical(p))
   rows = strsplit(x, "\n")[[1]]

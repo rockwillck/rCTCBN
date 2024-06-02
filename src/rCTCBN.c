@@ -68,7 +68,7 @@ SEXP ctcbn(SEXP fs, SEXP mb, SEXP bs, SEXP rs, SEXP sr, SEXP epsilon, SEXP nd, S
   int R = INTEGER(emr)[0];                                // # of EM runs
   double S = REAL(sr)[0];                           // sampling rate \lambda_s
   unsigned int seed = (unsigned) INTEGER(rs)[0]; // r, random seed
-  verbose = 0;
+  int verbose = 0;
   int N_draw = INTEGER(nd)[0]; // # of samples to draw
   int error_flag = 0;
   int f_flag = 1;
