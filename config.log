@@ -30,25 +30,12 @@ Kernel configured for up to 8 processors.
 Processor type: arm64e (ARM64E)
 Processors active: 0 1 2 3 4 5 6 7
 Primary memory available: 8.00 gigabytes
-Default processor set: 432 tasks, 3380 threads, 8 processors
-Load average: 4.37, Mach factor: 3.62
+Default processor set: 458 tasks, 2622 threads, 8 processors
+Load average: 2.29, Mach factor: 5.70
 /bin/machine           = unknown
 /usr/bin/oslevel       = unknown
 /bin/universe          = unknown
 
-PATH: /opt/homebrew/bin/
-PATH: /opt/homebrew/bin/
-PATH: /opt/homebrew/bin/
-PATH: /opt/homebrew/bin/
-PATH: /opt/homebrew/bin/
-PATH: /opt/homebrew/bin/
-PATH: /opt/homebrew/bin/
-PATH: /opt/homebrew/bin/
-PATH: /opt/homebrew/bin/
-PATH: /opt/homebrew/bin/
-PATH: /opt/homebrew/bin/
-PATH: /opt/homebrew/bin/
-PATH: /opt/homebrew/bin/
 PATH: /opt/homebrew/bin/
 PATH: /opt/homebrew/bin/
 PATH: /opt/homebrew/bin/
@@ -73,19 +60,6 @@ PATH: /Applications/quarto/bin/
 PATH: /Library/TeX/texbin/
 PATH: /usr/texbin/
 PATH: /Applications/RStudio.app/Contents/Resources/app/quarto/bin/
-PATH: /Applications/RStudio.app/Contents/Resources/app/bin/postback/
-PATH: /Applications/RStudio.app/Contents/Resources/app/bin/postback/
-PATH: /Applications/RStudio.app/Contents/Resources/app/bin/postback/
-PATH: /Applications/RStudio.app/Contents/Resources/app/bin/postback/
-PATH: /Applications/RStudio.app/Contents/Resources/app/bin/postback/
-PATH: /Applications/RStudio.app/Contents/Resources/app/bin/postback/
-PATH: /Applications/RStudio.app/Contents/Resources/app/bin/postback/
-PATH: /Applications/RStudio.app/Contents/Resources/app/bin/postback/
-PATH: /Applications/RStudio.app/Contents/Resources/app/bin/postback/
-PATH: /Applications/RStudio.app/Contents/Resources/app/bin/postback/
-PATH: /Applications/RStudio.app/Contents/Resources/app/bin/postback/
-PATH: /Applications/RStudio.app/Contents/Resources/app/bin/postback/
-PATH: /Applications/RStudio.app/Contents/Resources/app/bin/postback/
 PATH: /Applications/RStudio.app/Contents/Resources/app/bin/postback/
 PATH: /Applications/RStudio.app/Contents/Resources/app/bin/postback/
 PATH: /Applications/RStudio.app/Contents/Resources/app/bin/postback/

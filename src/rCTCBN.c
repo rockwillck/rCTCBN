@@ -10,13 +10,13 @@
 SEXP char_to_sexp(const char* input) {
     // Create a character vector of length 1
     SEXP result = PROTECT(allocVector(STRSXP, 1));
-    
+
     // Set the value of the character vector
     SET_STRING_ELT(result, 0, mkChar(input));
-    
+
     // Unprotect the SEXP object to manage R's garbage collection
     UNPROTECT(1);
-    
+
     // Return the SEXP object
     return result;
 }
@@ -59,25 +59,39 @@ char* read_file(const char *filename) {
     return buffer;
 }
 
-SEXP ctcbn(SEXP fs)
+SEXP ctcbn(SEXP fs, SEXP mb, SEXP bs, SEXP rs, SEXP sr, SEXP epsilon, SEXP nd, SEXP emr, SEXP xxx, SEXP ppp)
 {
   const char *filestem = CHAR(STRING_ELT(fs, 0));
 
   // defaults:
-  double eps = 0.0;                         // e
-  int R = 1;                                // # of EM runs
-  double S = 1.0;                           // sampling rate \lambda_s
-  unsigned int seed = (unsigned)time(NULL); // r, random seed
+  double eps = REAL(epsilon)[0];                         // e
+  int R = INTEGER(emr)[0];                                // # of EM runs
+  double S = REAL(sr)[0];                           // sampling rate \lambda_s
+  unsigned int seed = (unsigned) INTEGER(rs)[0]; // r, random seed
   verbose = 0;
-  int N_draw = 0; // # of samples to draw
+  int N_draw = INTEGER(nd)[0]; // # of samples to draw
   int error_flag = 0;
   int f_flag = 1;
   int e_flag = 0;
   int GPS = 0;
   int mode = LEARN_PARAM;
-  int B = 0;  // bootstrap samples
-  int BM = 0; // bootstrap mode
+  int B = INTEGER(bs)[0];  // bootstrap samples
+  int BM = INTEGER(mb)[0]; // bootstrap mode
   int c = 0;
+
+  if (LOGICAL(xxx)[0]) {
+    write_expected_times = 1;
+  }
+  if (LOGICAL(xxx)[1]) {
+    GPS = 1;
+  }
+
+  // no epsilon provided from R
+  if (eps >= 1.0) {
+    e_flag = 0;
+  } else {
+    e_flag = 1;
+  }
 
   if ((outputFileObj = fopen(outputFile, "w")) == NULL) {
     fprintf(stderr, "ERROR: Could not create file, %s\n", outputFile);
