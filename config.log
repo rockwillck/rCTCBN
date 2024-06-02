@@ -30,12 +30,13 @@ Kernel configured for up to 8 processors.
 Processor type: arm64e (ARM64E)
 Processors active: 0 1 2 3 4 5 6 7
 Primary memory available: 8.00 gigabytes
-Default processor set: 421 tasks, 2509 threads, 8 processors
-Load average: 2.78, Mach factor: 5.21
+Default processor set: 429 tasks, 2561 threads, 8 processors
+Load average: 2.86, Mach factor: 5.37
 /bin/machine           = unknown
 /usr/bin/oslevel       = unknown
 /bin/universe          = unknown
 
+PATH: /opt/homebrew/bin/
 PATH: /opt/homebrew/bin/
 PATH: /opt/homebrew/bin/
 PATH: /opt/homebrew/bin/
@@ -56,6 +57,7 @@ PATH: /Applications/quarto/bin/
 PATH: /Library/TeX/texbin/
 PATH: /usr/texbin/
 PATH: /Applications/RStudio.app/Contents/Resources/app/quarto/bin/
+PATH: /Applications/RStudio.app/Contents/Resources/app/bin/postback/
 PATH: /Applications/RStudio.app/Contents/Resources/app/bin/postback/
 PATH: /Applications/RStudio.app/Contents/Resources/app/bin/postback/
 PATH: /Applications/RStudio.app/Contents/Resources/app/bin/postback/
