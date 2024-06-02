@@ -309,8 +309,10 @@ SEXP ctcbn(SEXP fs, SEXP mb, SEXP bs, SEXP rs, SEXP sr, SEXP epsilon, SEXP nd, S
 
   free(lambda);
   fclose(outputFileObj);
+  char* outputResults = read_file(outputFile);
+  remove(outputFile);
 
-  return char_to_sexp(read_file(outputFile));
+  return char_to_sexp(outputResults);
 }
 
 R_CallMethodDef callMethods[] =
