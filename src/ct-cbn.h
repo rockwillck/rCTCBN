@@ -4,6 +4,8 @@
 #include <time.h>
 #include <math.h>
 #include <getopt.h>
+// omp does not appear to be used
+// #include <omp.h>
 
 #include <gsl/gsl_randist.h>
 #include <gsl/gsl_sf_gamma.h>
