@@ -1,10 +1,14 @@
+library(R6)
+
 .onLoad <- function(lib, package)
 {
   library.dynam("rCTCBN", package, lib)
 }
 
 read_pattern <- function(filestem) {
-  lines <- readLines(paste(suppressWarnings(normalizePath(filestem)), ".pat", sep=""))
+  lines <- readLines(paste(suppressWarnings(normalizePath(filestem)),
+                           ".pat",
+                           sep = ""))
 
   # Parse dimensions from the first line
   dimensions <- as.numeric(strsplit(lines[1], "\\s+")[[1]][2:3])
@@ -12,26 +16,30 @@ read_pattern <- function(filestem) {
   num_cols <- dimensions[2]
 
   # Read matrix data from subsequent lines
-  matrix_data <- sapply(lines[2:length(lines)], function(line) as.numeric(strsplit(line, "\\s+")[[1]]))
+  matrix_data <- sapply(lines[2:length(lines)], function(line)
+    as.numeric(strsplit(line, "\\s+")[[1]]))
 
   # Convert matrix data into a matrix
   matrix_data <- matrix(matrix_data, nrow = num_rows, byrow = FALSE)
   return(t(matrix_data))
 }
 read_poset <- function(filestem) {
-  lines <- readLines(paste(suppressWarnings(normalizePath(filestem)), ".poset", sep=""))
+  lines <- readLines(paste(suppressWarnings(normalizePath(filestem)), ".poset", sep =
+                             ""))
   allSets = c()
   for (i in 3:length(lines) - 1) {
-    allSets = c(allSets, list(as.numeric(unlist(strsplit(lines[[i]], " ")))))
+    allSets = c(allSets, list(as.numeric(unlist(
+      strsplit(lines[[i]], " ")
+    ))))
   }
-  return(list(
-    mutations=as.numeric(lines[[1]]),
-    sets=allSets
-  ))
+  return(list(mutations = as.numeric(lines[[1]]), sets = allSets))
 }
+
 read_lambda <- function(filestem) {
-  lines <- unlist(as.numeric(readLines(paste(suppressWarnings(normalizePath(filestem)), ".lambda", sep=""))))
-  return(matrix(lines, ncol=1))
+  lines <- unlist(as.numeric(readLines(
+    paste(suppressWarnings(normalizePath(filestem)), ".lambda", sep = "")
+  )))
+  return(matrix(lines, ncol = 1))
 }
 
 matrix_to_string <- function(mat) {
@@ -52,7 +60,8 @@ matrix_to_string <- function(mat) {
     # }
     # Add a newline character at the end of each row (except the last row)
     if (i == 1) {
-      result <- res;
+      result <- res
+
     } else if (i <= nrows) {
       result <- paste(result, res, sep = "\n")
     }
@@ -69,44 +78,55 @@ temp_file = function(ext, fileC) {
   return(substr(tf, 0, nchar(tf) - nchar(ext)))
 }
 
-dataset = setRefClass("dataset", fields = list(poset = "list", numMutations ="numeric",
-                                               patternOrLambda = "matrix"), methods = list(
-                                                 getPoset = function() {
-                                                   output = ""
-                                                   for (i in 1:length(poset)) {
-                                                     output = paste(output,
-                                                                    paste(poset[[i]][[1]], poset[[i]][[2]]),
-                                                                    sep=""
-                                                     )
-                                                     output = paste(output, "\n")
-                                                   }
-                                                   fileC = (paste(paste(as.character(numMutations), output, sep="\n"), "0", sep=""))
-                                                   return(temp_file(ext = ".poset", fileC = fileC))
-                                                 },
-                                                 getSecond = function(n) {
-                                                   if (n == 0) {
-                                                     return(getPattern())
-                                                   } else {
-                                                     return(getLambda())
-                                                   }
-                                                 },
-                                                 getPattern = function() {
-                                                   fileC = (paste(
-                                                     paste(as.character(nrow(patternOrLambda)), as.character(ncol(patternOrLambda)), sep = " "),
-                                                     matrix_to_string(patternOrLambda), sep="\n"))
+Spock = R6Class("Spock", list(
+  poset = list(),
+  numMutations = 0,
+  patternOrLambda = matrix(),
+  initialize = function (poset, numMutations, patternOrLambda) {
+    stopifnot(is.list(poset))
+    stopifnot(is.numeric(numMutations))
+    stopifnot(is.matrix(patternOrLambda))
+    self$poset = poset
+    self$numMutations = numMutations
+    self$patternOrLambda = patternOrLambda
+  },
+  getPoset = function() {
+    output = ""
+    for (i in 1:length(self$poset)) {
+      output = paste(output, paste(self$poset[[i]][[1]], self$poset[[i]][[2]]), sep = "")
+      output = paste(output, "\n")
+    }
+    fileC = (paste(paste(
+      as.character(self$numMutations), output, sep = "\n"
+    ), "0", sep = ""))
+    return(temp_file(ext = ".poset", fileC = fileC))
+  },
+  getSecond = function(n) {
+    if (n == 0) {
+      return(self$getPattern())
+    } else {
+      return(self$getLambda())
+    }
+  },
+  getPattern = function() {
+    fileC = (paste(
+      paste(as.character(nrow(self$patternOrLambda)), as.character(ncol(self$patternOrLambda)), sep = " "),
+      matrix_to_string(self$patternOrLambda),
+      sep = "\n"
+    ))
 
-                                                   return(temp_file(ext = ".pat", fileC = fileC))
-                                                 },
-                                                 getLambda = function() {
-                                                   output = ""
-                                                   for (i in 1:length(patternOrLambda)) {
-                                                     output = paste(output, patternOrLambda[[i]], sep="")
-                                                     output = paste(output, "\n")
-                                                   }
-                                                   fileC = (output)
-                                                   return(temp_file(ext = ".lambda", fileC = fileC))
-                                                 }
-                                               ))
+    return(temp_file(ext = ".pat", fileC = fileC))
+  },
+  getLambda = function() {
+    output = ""
+    for (i in 1:length(self$patternOrLambda)) {
+      output = paste(output, self$patternOrLambda[[i]], sep = "")
+      output = paste(output, "\n")
+    }
+    fileC = (output)
+    return(temp_file(ext = ".lambda", fileC = fileC))
+  }
+))
 
 filter_strings_by_start <- function(strings, start_substring) {
   filtered_strings <- grep(paste0("^", start_substring), strings, value = TRUE)
@@ -139,12 +159,12 @@ ctcbn <- function(datasetObj,
 
   splitted = unlist(strsplit(x, "/"))
 
-  outDir = paste(splitted[1:(length(splitted ) - 1)], collapse = "/")
+  outDir = paste(splitted[1:(length(splitted) - 1)], collapse = "/")
   outFiles = (filter_strings_by_start(list.files(outDir), splitted[[length(splitted)]]))
 
   outputList = list()
   for (file in outFiles) {
-    file = paste(c(outDir, file), collapse="/")
+    file = paste(c(outDir, file), collapse = "/")
     if (endsWith(file, ".poset")) {
       outputList$poset = read_poset(substring(file, 1, nchar(file) - 6))
     }
