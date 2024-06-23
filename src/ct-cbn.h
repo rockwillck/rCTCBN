@@ -4,8 +4,6 @@
 #include <time.h>
 #include <math.h>
 #include <getopt.h>
-// omp does not appear to be used
-// #include <omp.h>
 
 #include <gsl/gsl_randist.h>
 #include <gsl/gsl_sf_gamma.h>
@@ -21,6 +19,7 @@
 #define MAX(a,b) ( (a) > (b) ? (a) : (b) )
 #define MIN(a,b) ( (a) < (b) ? (a) : (b) )
 
+
 enum L_MODE {LEARN_POSET, LEARN_PARAM, LEARN_BOTH};
 
 int verbose;
@@ -30,8 +29,6 @@ gsl_rng *RNG;  // random number generator
 
 int** GENOTYPE;  // GENOTYPE[i] is the integer i in binary (as int array)
 
-char* outputFile = "output";
-FILE* outputFileObj;
 
 typedef struct {
   int** P;  // cover relations of the event poset
@@ -68,9 +65,6 @@ typedef struct {
   int* N_u; //No obs
 } gsl_parameters;
 
-char* get_output_file_name() {
-  return outputFile;
-}
 
 int* get_int_array(const int n)
 {
@@ -190,13 +184,14 @@ double*** get_double_cube(const int m, const int n, const int l)
 void print_int_array(int* x, int n)
 {
   int j;
+
   if (n > 0)
   {
     for (j=0; j<n-1; j++)
-      fprintf(outputFileObj, "%d ", x[j]);
-    fprintf(outputFileObj, "%d", x[n-1]);
+      printf("%d ", x[j]);
+    printf("%d", x[n-1]);
   }
-  fprintf(outputFileObj, "\n");
+  printf("\n");
 }
 
 
@@ -219,12 +214,12 @@ void print_double_array(double* x, int n)
   {
     for (j=0; j<n; j++)
     {
-      fprintf(outputFileObj, DOUBLE_FORMAT, x[j]);
+      printf(DOUBLE_FORMAT, x[j]);
       if (j < n-1)
-        fprintf(outputFileObj, "\t");
+        printf("\t");
     }
   }
-  fprintf(outputFileObj, "\n");
+  printf("\n");
 }
 
 
@@ -247,9 +242,9 @@ void write_poset(int k, char* filestem, int** P, int n, int b)
   char filename[255];
 
   if (b >= 0)
-    sprintf(filename, "%s/b%05d.poset", filestem, b);
+    sprintf(filename, "%s-b%05d.poset", filestem, b);
   else
-    sprintf(filename, "%s/%05d.poset", filestem, k);
+    sprintf(filename, "%s-%05d.poset", filestem, k);
 
   FILE *output;
   if ( (output = fopen(filename, "w")) == NULL )
@@ -439,43 +434,43 @@ void print_model(model* M)
   int n = M->n;
   int* g = get_int_array(n+1);
 
-  fprintf(outputFileObj, "\n\nMODEL\n\n");
-  fprintf(outputFileObj, "\nP =\n");
+  printf("\n\nMODEL\n\n");
+  printf("\nP =\n");
   print_int_matrix(M->P, n+1, n+1);
-  fprintf(outputFileObj, "\n");
+  printf("\n");
 
-  fprintf(outputFileObj, "lattice size, m = %d\nsorted lattice = \n", m);
+  printf("lattice size, m = %d\nsorted lattice = \n", m);
   for (i=0; i<m; i++)
   {
-    fprintf(outputFileObj, "%d\t", i);
+    printf("%d\t", i);
     genotype_of(M->J_P[i], g, n+1);
     print_int_array(g, n+1);
   }
   //print_int_array(M->J_P, m);
 
-  fprintf(outputFileObj, "\nlinear extension of the poset = ");
+  printf("\nlinear extension of the poset = ");
   print_int_array(M->lin_ext, n);
 
   for (i=0; i<m; i++)
   {
-    fprintf(outputFileObj, "\nparents of %5d = ", i);
+    printf("\nparents of %5d = ", i);
     //genotype_of(M->J_P[i], g, n+1);
     //print_int_array(g, n+1);
     print_int_array(M->pa[i], M->N_pa[i]);
-    fprintf(outputFileObj, "differing events = ");
+    printf("differing events = ");
     print_int_array(M->pa_diff[i], M->N_pa[i]);
   }
-  fprintf(outputFileObj, "\n\n");
+  printf("\n\n");
 
   for (i=0; i<m; i++)
   {
-    fprintf(outputFileObj, "differing events to children of %5d = ", i);
+    printf("differing events to children of %5d = ", i);
     //genotype_of(M->J_P[i], g, n+1);
     //print_int_array(g, n+1);
     print_int_array(M->ch_diff[i], M->N_ch[i]);
   }
 
-  fprintf(outputFileObj, "\n");
+  printf("\n");
 
   free(g);
 }
@@ -486,17 +481,17 @@ void print_data(data* D, int N_u, int n, int m)
 {
   int k;
 
-  fprintf(outputFileObj, "\n\nDATA\n\n");
+  printf("\n\nDATA\n\n");
   for (k=0; k<N_u; k++)
   {
-    fprintf(outputFileObj, "# %d\n", k);
-    fprintf(outputFileObj, "g = ");  print_int_array(D[k].g, n+1);
-    fprintf(outputFileObj, "t = ");  print_double_array(D[k].t, n+1);
-    fprintf(outputFileObj, "Q =\n");  print_int_matrix(D[k].Q, n+1, n+1);
-    fprintf(outputFileObj, "J_Q = ");  print_int_array(D[k].J_Q, m);
-    fprintf(outputFileObj, "count = %d\n", D[k].count);
-    fprintf(outputFileObj, "is compatible = %d\n", D[k].is_compatible);
-    fprintf(outputFileObj, "--------------------\n");
+    printf("# %d\n", k);
+    printf("g = ");  print_int_array(D[k].g, n+1);
+    printf("t = ");  print_double_array(D[k].t, n+1);
+    printf("Q =\n");  print_int_matrix(D[k].Q, n+1, n+1);
+    printf("J_Q = ");  print_int_array(D[k].J_Q, m);
+    printf("count = %d\n", D[k].count);
+    printf("is compatible = %d\n", D[k].is_compatible);
+    printf("--------------------\n");
   }
 
 }
@@ -539,7 +534,7 @@ int** read_patterns(char* filestem, int* N, int n)
 
   /* Read dimensions */
   fscanf(input, "%d %d", N, &p);
-  if (verbose) fprintf(outputFileObj, "\nreading data from file %s :  %d samples, %d events ...\n\n", filename, *N, p-1);
+  if (verbose) printf("\nreading data from file %s :  %d samples, %d events ...\n\n", filename, *N, p-1);
   if (*N < 1)
   {
     fprintf(stderr, "Error:  Less than one data point!\n");
@@ -597,7 +592,7 @@ double** read_times(char* filestem, int* N, int n)
 
   /* Read dimensions */
   fscanf(input, "%d %d", N, &p);
-  fprintf(outputFileObj, "read times: %d samples, %d events\n\n", *N, p-1);
+  printf("read times: %d samples, %d events\n\n", *N, p-1);
   if (*N < 1)
   {
     fprintf(stderr, "Error:  Less than one data point!\n");
@@ -654,7 +649,7 @@ void read_poset(char* filestem, model* M)
   /* Read number of relations */
   int n;
   fscanf(input, "%d", &n);
-  if (verbose)  fprintf(outputFileObj, "n = %d events\n\n", n);
+  if (verbose)  printf("n = %d events\n\n", n);
   if ((n < 1) || (n > 25))
   {
     fprintf(stderr, "Error:  Number of events is %d.  Supported range is {1, ..., 14}.\n", n);
@@ -668,7 +663,7 @@ void read_poset(char* filestem, model* M)
   fscanf(input,"%d %d", &left, &right);
   while (left != 0)
   {
-    if (verbose)  fprintf(outputFileObj, "%d --> %d\n", left, right);  // i.e., left < right
+    if (verbose)  printf("%d --> %d\n", left, right);  // i.e., left < right
     if ((left > n) || (right > n) || (left < 0) || (right < 1))
     {
       fprintf(stderr, "Error:  Undefined event in %s!\n", filename);
@@ -789,7 +784,7 @@ void print_genotype(int* x, int n)
   int i;
 
   for (i=0; i<n; i++)
-    fprintf(outputFileObj, "%d", x[i]);
+    printf("%d", x[i]);
 
 }
 
@@ -1924,8 +1919,8 @@ double EM(model* M, data* D, int N_u, double* lambda, double* alpha, double q_ep
 
       if (verbose)
       {
-        fprintf(outputFileObj, "%d\t", iter);
-        fprintf(outputFileObj, DOUBLE_FORMAT, loglik_new);  fprintf(outputFileObj, "\t");
+        printf("%d\t", iter);
+        printf(DOUBLE_FORMAT, loglik_new);  printf("\t");
         print_double_array(lambda, n+1);
       }
 
@@ -2077,10 +2072,10 @@ double EM_EM(model* M, data* D, int N_u, double* lambda, double* epsilon)
      if(GENOTYPE[M->J_P[i]][0])
      {
      for(k=0;k<N_u;k++)
-     fprintf(outputFileObj, "%f\t",condprob[i][k]);
-     fprintf(outputFileObj, "\n");
+     printf("%f\t",condprob[i][k]);
+     printf("\n");
      }
-     fprintf(outputFileObj, "\n");
+     printf("\n");
      */
 
     compute_censored_prob(lambda, M, lambda_exit, Prob, censprob, lattice_index);
@@ -2090,17 +2085,17 @@ double EM_EM(model* M, data* D, int N_u, double* lambda, double* epsilon)
      if(GENOTYPE[M->J_P[i]][0])
      {
      print_int_array(GENOTYPE[M->J_P[i]],n+1);
-     fprintf(outputFileObj, "%f\n", Prob[i]);
-     fprintf(outputFileObj, "---\n");
+     printf("%f\n", Prob[i]);
+     printf("---\n");
      for(l = 0; l < m; l++)
      if( M->J_P[l] >= M->J_P[i] &&  GENOTYPE[M->J_P[l]][0])
      {
      print_int_array(GENOTYPE[M->J_P[l]],n+1);
-     fprintf(outputFileObj, "%f\n",censprob[i][l]);
+     printf("%f\n",censprob[i][l]);
      }
-     fprintf(outputFileObj, "\n");
+     printf("\n");
      }
-     fprintf(outputFileObj, "\n");
+     printf("\n");
      */
 
     // Compute all exp waiting times E[T|S]
@@ -2111,8 +2106,8 @@ double EM_EM(model* M, data* D, int N_u, double* lambda, double* epsilon)
 
     if (verbose)
     {
-      fprintf(outputFileObj, "%d\t%f\t", iter,*epsilon);
-      fprintf(outputFileObj, DOUBLE_FORMAT, loglik_new);  fprintf(outputFileObj, "\t");
+      printf("%d\t%f\t", iter,*epsilon);
+      printf(DOUBLE_FORMAT, loglik_new);  printf("\t");
       print_double_array(lambda, n+1);
     }
     fflush(stdout);
@@ -2279,7 +2274,7 @@ double estimate_model_parameters(model* M, data* D, int N_u, int R, double* lamb
   {
     guess_lambda(M->P, M->n, D, N_u, lambda);
     loglik = EM(M, D, N_u, lambda, alpha, q_eps) + loglike_incompatible;
-    if (verbose)  fprintf(outputFileObj, "\n");
+    if (verbose)  printf("\n");
     if ((r == 0) || (loglik > loglik_opt))
     {
       loglik_opt = loglik;
@@ -2370,7 +2365,7 @@ data* make_data_set(int** pat, int N, int n, int* N_u, int* pat_idx)
   for (k=0; k<N; k++)
     *N_u += (count[k] > 0);
 
-  if (verbose)  fprintf(outputFileObj, "N_u = %d unique patterns\n", *N_u);
+  if (verbose)  printf("N_u = %d unique patterns\n", *N_u);
 
   data* D = calloc(*N_u, sizeof(data));
 
@@ -2651,7 +2646,7 @@ void select_poset(int k, double eps, model* M, double* lambda, data* D, int N_u,
   {
     loglik = estimate_model_parameters(M, D, N_u, R, lambda, &alpha);
     if(print){
-      fprintf(outputFileObj, "%d\t%g\t%g\t%g\t", k, eps, alpha, loglik);
+      printf("%d\t%g\t%g\t%g\t", k, eps, alpha, loglik);
       print_double_array(lambda, M->n+1);
     }
   }
@@ -2741,7 +2736,7 @@ double try_edge(model* M, model* M2, data* D, int N_u, double* lambda, double* e
     R1 = (int) iter / n + 1;
     R2 = iter % n + 1;
 
-    //      fprintf(outputFileObj, "%i, %i\n", R1, R2);
+    //      printf("%i, %i\n", R1, R2);
 
     if (R1 == R2)
     {
@@ -2755,7 +2750,7 @@ double try_edge(model* M, model* M2, data* D, int N_u, double* lambda, double* e
 
       if (M2->P[R1][R2]) // added edge (needs testing)
       {
-        //fprintf(outputFileObj, "Added.\n");
+        //printf("Added.\n");
         poset_stat = reduce_to_cover_relations (M2->P, n);
         if (poset_stat != 2) // Fatal
         {
@@ -2791,7 +2786,7 @@ double try_edge(model* M, model* M2, data* D, int N_u, double* lambda, double* e
 
       else // deleted edge
       {
-        //fprintf(outputFileObj, "Deleted.\n");
+        //printf("Deleted.\n");
         poset_stat = reduce_to_cover_relations (M2->P, n);
         compatibility(D, N_u, M2);
         N_compatible = 0;
@@ -2834,7 +2829,7 @@ double try_edge(model* M, model* M2, data* D, int N_u, double* lambda, double* e
   /* 	reject = 1; */
   /*       iter++; */
 
-  /*       //      fprintf(outputFileObj, "R1=%i\tR2=%i\n",R1,R2); */
+  /*       //      printf("R1=%i\tR2=%i\n",R1,R2); */
 
   /*       if (!reject) */
   /* 	{ */
@@ -2873,10 +2868,10 @@ double try_edge(model* M, model* M2, data* D, int N_u, double* lambda, double* e
   /* 		  if (alpha - alpha_new > 0.2) */
   /* 		    { */
   /* 		      loglik_next[R1-1][R2-1] = -1/0.0; */
-  /* 		      //fprintf(outputFileObj, "%i %i; d_alpha=%f\n",R1,R2,alpha-alpha_new); */
+  /* 		      //printf("%i %i; d_alpha=%f\n",R1,R2,alpha-alpha_new); */
   /* 		      reject = 1; */
   /* 		    } */
-  /* 		  //else fprintf(outputFileObj, "%i %i; D_alpha=%f\n",R1,R2,alpha-alpha_new); */
+  /* 		  //else printf("%i %i; D_alpha=%f\n",R1,R2,alpha-alpha_new); */
   /* 		} */
   /* 	      else reject = 1; */
   /* 	    } */
@@ -2947,9 +2942,9 @@ double try_edge(model* M, model* M2, data* D, int N_u, double* lambda, double* e
 
     if (!reject)
     {
-      fprintf(outputFileObj, "Testing:\n");
+      printf("Testing:\n");
       //print_int_matrix(M2->P,n+1,n+1);
-      fprintf(outputFileObj, "%i %i\n",R1,R2);
+      printf("%i %i\n",R1,R2);
 
       make_model(M2, n, M2->P);
       *epsilon = 1- alpha_all[R1-1][R2-1]; // Set initial value for epsilon
@@ -2963,7 +2958,7 @@ double try_edge(model* M, model* M2, data* D, int N_u, double* lambda, double* e
       }
       loglik_new = loglik_next[R1-1][R2-1];
 
-      fprintf(outputFileObj, "%f\t%f\n",loglik,loglik_new);
+      printf("%f\t%f\n",loglik,loglik_new);
 
       if ( loglik_new > loglik) // Always accept increasing Loglik
       {
@@ -2982,7 +2977,7 @@ double try_edge(model* M, model* M2, data* D, int N_u, double* lambda, double* e
       {
         boltz = exp( (loglik_new - loglik ) / T );
         R3 = (double) rand() / (double) RAND_MAX;
-        fprintf(outputFileObj, " e^{-dL/T}=%f\tR=%f\n", boltz, R3);
+        printf(" e^{-dL/T}=%f\tR=%f\n", boltz, R3);
         if ( R3 < boltz )
         {
           make_model(M, n, M2->P);
@@ -3002,7 +2997,7 @@ double try_edge(model* M, model* M2, data* D, int N_u, double* lambda, double* e
 
     iter++;
   }
-  fprintf(outputFileObj, "rejected\n");
+  printf("rejected\n");
   free(R4);
   free(R5);
   free(lambda_new);
@@ -3107,24 +3102,24 @@ double local_search(model* M, data* D, int N_u, double* lambda, double* epsilon,
   }
   //print_double_matrix(loglik_next, M->n, M->n);
 
-  fprintf(outputFileObj, "Step %i/%i\n===\n%f\t%f\n", iter,N_iter,T, loglik_new);
+  printf("Step %i/%i\n===\n%f\t%f\n", iter,N_iter,T, loglik_new);
   //print_int_matrix(M->P,M->n+1,M->n+1);
   for(i=1;i<=M->n;i++)
     for(j=1;j<=M->n;j++)
       if(M->P[i][j])
-        fprintf(outputFileObj, "%i %i\n",i,j);
+        printf("%i %i\n",i,j);
 
       while (iter <= N_iter)
       {
         loglik_new = try_edge(M, &M2, D, N_u, lambda, epsilon, loglik_new, loglik_next, T);
 
-        fprintf(outputFileObj, "===\nStep %i/%i\nT=%f\tL=%f\n", iter, N_iter, T, loglik_new);
+        printf("===\nStep %i/%i\nT=%f\tL=%f\n", iter, N_iter, T, loglik_new);
         //print_int_matrix(M->P,M->n+1,M->n+1);
         for(i=1;i<=M->n;i++)
           for(j=1;j<=M->n;j++)
             if(M->P[i][j])
-              fprintf(outputFileObj, "%i %i\n",i,j);
-            fprintf(outputFileObj, "---\n");
+              printf("%i %i\n",i,j);
+            printf("---\n");
 
             // Write output
             if (w_flag){
@@ -3136,7 +3131,7 @@ double local_search(model* M, data* D, int N_u, double* lambda, double* epsilon,
             T *= 1 - 1 / (double)M->n;
       }
 
-      fprintf(outputFileObj, "---\nLoglik=\n");
+      printf("---\nLoglik=\n");
       print_double_matrix(loglik_next, M->n, M->n);
       for(i=0; i < M->n; i++)
         free(loglik_next[i]);
@@ -3299,8 +3294,8 @@ int ML_path(model *M, double *lambda){
       }
     }
     i = index_next;
-    fprintf(outputFileObj, "%i ", mut_next);
+    printf("%i ", mut_next);
   }
-  fprintf(outputFileObj, "\n");
+  printf("\n");
   return 0;
 }

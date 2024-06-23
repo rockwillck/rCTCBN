@@ -6,3 +6,7 @@ GSL_LIBS   = -L/opt/homebrew/Cellar/gsl/2.7.1/lib -lgsl -lgslcblas
 # combine to standard arguments for R
 PKG_CPPFLAGS =  $(GSL_CFLAGS) -I.
 PKG_LIBS = $(GSL_LIBS)
+
+# if omp is used, which it appears it is not
+# PKG_CPPFLAGS =  $(GSL_CFLAGS) -Xclang -fopenmp -I.
+# PKG_LIBS = $(GSL_LIBS) -lomp
