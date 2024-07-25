@@ -1,3 +1,4 @@
+import(R6)
 useDynLib(rCTCBN, .registration = TRUE, .fixes = "C_")
 
 exportPattern("^[[:alpha:]]+")

@@ -1,5 +1,11 @@
 # rCTCBN
 An adaptation of the CT-CBN program for R
+## Dependencies
+GSL must be installed. On Mac, GSL can be installed using Homebrew:
+```bash
+brew install gsl
+```
+You may need to restart R after installing.
 ## Installation
 `rCTCBN` can be installed from GitHub using
 ```R

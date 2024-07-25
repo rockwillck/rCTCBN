@@ -8,3 +8,4 @@ Description: Runs CTCBN, a program created by Prof. Niko Beerenwinkel
 License: All Rights Reserved
 Encoding: UTF-8
 LazyData: true
+Imports: R6

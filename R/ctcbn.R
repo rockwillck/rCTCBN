@@ -28,13 +28,16 @@ read_poset <- function(filestem) {
                              ""))
   allSets = c()
   for (i in 3:length(lines) - 1) {
-    allSets = c(allSets, list(as.numeric(unlist(
+    allSets = c(allSets, as.numeric(unlist(
       strsplit(lines[[i]], " ")
-    ))))
+    )[[1]]))
+    allSets = c(allSets, as.numeric(unlist(
+      strsplit(lines[[i]], " ")
+    )[[2]]))
   }
-  return(list(mutations = as.numeric(lines[[1]]), sets = allSets))
-}
 
+  return(list(mutations = as.numeric(lines[[1]]), sets = matrix(allSets, ncol=2, byrow = TRUE)))
+}
 read_lambda <- function(filestem) {
   lines <- unlist(as.numeric(readLines(
     paste(suppressWarnings(normalizePath(filestem)), ".lambda", sep = "")
@@ -83,7 +86,7 @@ Spock = R6Class("Spock", list(
   numMutations = 0,
   patternOrLambda = matrix(),
   initialize = function (poset, numMutations, patternOrLambda) {
-    stopifnot(is.list(poset))
+    stopifnot(is.matrix(poset))
     stopifnot(is.numeric(numMutations))
     stopifnot(is.matrix(patternOrLambda))
     self$poset = poset
@@ -92,9 +95,11 @@ Spock = R6Class("Spock", list(
   },
   getPoset = function() {
     output = ""
-    for (i in 1:length(self$poset)) {
-      output = paste(output, paste(self$poset[[i]][[1]], self$poset[[i]][[2]]), sep = "")
-      output = paste(output, "\n")
+    if (nrow(self$poset) == 2) {
+      for (i in 1:ncol(self$poset)) {
+        output = paste(output, paste(self$poset[i, 1], self$poset[i, 2]), sep = "")
+        output = paste(output, "\n")
+      }
     }
     fileC = (paste(paste(
       as.character(self$numMutations), output, sep = "\n"
@@ -162,6 +167,43 @@ ctcbn <- function(datasetObj,
   outDir = paste(splitted[1:(length(splitted) - 1)], collapse = "/")
   outFiles = (filter_strings_by_start(list.files(outDir), splitted[[length(splitted)]]))
 
+  outputList = list()
+  for (file in outFiles) {
+    file = paste(c(outDir, file), collapse = "/")
+    if (endsWith(file, ".poset")) {
+      outputList$poset = read_poset(substring(file, 1, nchar(file) - 6))
+    }
+    if (endsWith(file, ".pat")) {
+      outputList$pattern = read_pattern(substring(file, 1, nchar(file) - 4))
+    }
+    if (endsWith(file, ".lambda")) {
+      outputList$lambda = read_lambda(substring(file, 1, nchar(file) - 7))
+    }
+  }
+  return(outputList)
+}
+
+hcbn <- function(datasetObj,
+                  anneal = FALSE,
+                  temp = 0,
+                  annealing_steps = 0)
+{
+  outputStem = tempfile("output")
+  x = .Call(
+    "hcbn",
+    outputStem,
+    datasetObj$getPoset(),
+    datasetObj$getSecond(num_drawn_samples),
+    as.integer(anneal),
+    as.double(temp),
+    as.integer(annealing_steps)
+  )
+  
+  splitted = unlist(strsplit(x, "/"))
+  
+  outDir = paste(splitted[1:(length(splitted) - 1)], collapse = "/")
+  outFiles = (filter_strings_by_start(list.files(outDir), splitted[[length(splitted)]]))
+  
   outputList = list()
   for (file in outFiles) {
     file = paste(c(outDir, file), collapse = "/")

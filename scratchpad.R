@@ -1,9 +1,11 @@
-library(ctcbn)
+library(rCTCBN)
 
 bc = Spock$new(
-  poset = read_poset("~/Desktop/test/BC")$sets,
-  numMutations = read_poset("~/Desktop/test/BC")$mutations,
-  patternOrLambda = read_pattern("~/Desktop/test/BC")
+  poset = matrix(),
+  numMutations = 10,
+  patternOrLambda = read_pattern("examples/BC")
 )
-testingBC = ctcbn(bc, bootstrap_mode = TRUE, bootstrap_samples = 1000)
+testingBC = ctcbn(bc)
 
+
+.Call("hcbn", "/Users/williamchoi-kim/Desktop/CTCBN_R/examples/BC")
